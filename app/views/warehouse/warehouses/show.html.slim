@@ -1,0 +1,24 @@
+h1 #{@warehouse.name}
+.panel
+  .panel-content
+    = link_to '库存信息', warehouse.warehouse_stocks_path(@warehouse), class: 'btn btn-primary'
+    = link_to '采购', warehouse.new_warehouse_order_path(@warehouse), class: 'btn btn-info'
+    hr
+    h4 我的采购单
+    table.table
+      thead
+        tr
+          th ID
+          th 供应商
+          th 订单总金额
+          th 订单状态
+          th 查看
+      tbody
+        - @orders.each do |order|
+          tr
+            td #{order.id}
+            td #{order.sale.full_name}
+            td #{order.price}
+            td #{order.status}
+            td
+              = link_to '详情', warehouse.warehouse_order_path(@warehouse.id,order.id)

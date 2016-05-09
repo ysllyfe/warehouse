@@ -1,0 +1,6 @@
+h1 修改仓库名称
+.panel
+  .panel-content
+    = simple_form_for @warehouse, url: warehouse.warehouse_path(@warehouse.id) do |f|
+      = f.input :name, label: '仓库名称'
+      = f.submit '修改名称', class: 'btn btn-primary'

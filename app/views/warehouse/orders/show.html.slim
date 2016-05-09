@@ -1,0 +1,25 @@
+h1 需求方：#{@order.purchase.name}
+h1 供货方：#{@order.sale.name}
+.panel
+  .panel-content
+    h4 订单商品
+    = order_operation_panel(@order,@warehouse.id)
+    table.table
+      thead
+        tr
+          th 商品ID
+          th 商品
+          th 指导价
+          th 品牌
+          th 分类
+          th 采购需求
+      tbody
+        - @goods.each do |good|
+          tr
+            td #{good.id}
+            td #{@product.find(good.goods_id).name}
+            td #{good.unit_price}
+            td #{@product.find(good.goods_id).brand_id}
+            td #{@product.find(good.goods_id).product_category_id}
+            td #{good.quantity}
+    = render 'memo'

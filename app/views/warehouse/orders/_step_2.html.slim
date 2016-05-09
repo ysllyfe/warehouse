@@ -1,0 +1,30 @@
+h2
+  | 选择的供应商是：#{@sale_warehouse.full_name} &nbsp;
+  = link_to '重新选择', warehouse.new_warehouse_order_path(@warehouse), class: 'btn btn-info btn-xs'
+= simple_form_for '', url: warehouse.warehouse_orders_path(@warehouse.id) do |f|
+  input type="hidden" name="sale_warehouse" value="#{@sale_warehouse.id}"
+  table.table
+    thead
+      tr
+        th 商品ID
+        th 商品
+        th 指导价
+        th 品牌
+        th 分类
+        th 供应商库存
+        th 我们的库存
+        th 采购需求
+    tbody
+      - @sale_goods_stocks.each do |good|
+        tr
+          td #{good[:id]}
+          td #{good[:name]}
+          td #{good[:guidance_price]}
+          td #{good[:brand_id]}
+          td #{good[:product_category_id]}
+          td #{good[:amount]}
+          td #{good[:other_amount]}
+          td
+            input type="hidden" value="#{good[:guidance_price]}" name="price[#{good[:id]}]"
+            input type="text" value="0" name="purchase[#{good[:id]}]"
+  = f.submit ' 提 交 订 单 ', class: 'btn btn-primary'

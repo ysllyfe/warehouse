@@ -1,0 +1,27 @@
+h1 仓库管理
+.panel
+  .panel-content
+    table.table
+      thead
+        tr
+          th ID
+          th 名称
+          th 类型
+          th 子节点
+          th 修改
+          th 合仓
+          th 库存
+      tbody
+        - @warehouses.each do |t|
+          tr
+            td #{t.id}
+            td
+              = link_to t.full_name, warehouse.warehouse_path(t.id)
+            td #{t.warehouse_type}
+            td #{t.children_name}
+            td
+              = link_to '修改', warehouse.edit_warehouse_path(t.id)
+            td
+              = link_to '合并', warehouse.merge_warehouse_path(t.id)
+            td
+              = link_to '库存', warehouse.warehouse_stocks_path(t.id)

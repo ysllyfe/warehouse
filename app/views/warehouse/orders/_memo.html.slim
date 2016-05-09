@@ -1,0 +1,9 @@
+- @memos.each do |memo|
+  .bg-gray-light.p-10 #{memo.memo}
+  .info
+    label.label.label-primary #{memo.user_name}
+    small &nbsp;#{memo.created_at.strftime("%Y-%m-%d %H:%M:%S")}
+
+= simple_form_for @memo, url: warehouse.memo_warehouse_order_path(@warehouse.id,@order.id) do |f|
+  = f.input :memo, label: '备注信息'
+  = f.submit '提交备注', class: 'btn btn-primary'

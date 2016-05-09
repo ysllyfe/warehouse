@@ -1,0 +1,9 @@
+h1 并仓
+.panel
+  .panel-content
+    = simple_form_for @warehouse, url: warehouse.merge_warehouse_path(@warehouse.id) do |f|
+      - @warehouses.each do |t|
+        label
+          input type="checkbox" value="#{t.id}" name="merge_warehouses[]"
+          | #{t.name}
+      = f.submit '合并仓库', class: 'btn btn-primary'

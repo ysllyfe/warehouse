@@ -1,0 +1,27 @@
+h1 “#{@warehouse.full_name}” 库存情况
+.panel
+  .panel-content
+    table.table
+      thead
+        tr
+          th 商品ID
+          th 商品
+          th 指导价
+          th 成本价
+          th 品牌
+          th 分类
+          th 库存
+          th 增加库存
+      tbody
+        - @goods_stocks.each do |good|
+          tr
+            td #{good[:id]}
+            td #{good[:name]}
+            td #{good[:guidance_price]}
+            td #{good[:cost_price]}
+            td #{good[:brand_id]}
+            td #{good[:product_category_id]}
+            td #{good[:amount]}
+            td
+              = link_to '增加', '#', :class=>'ajax-modal', 'data-toggle'=>"modal", 'data-target'=>"#modal-bottomfull", "data-goods-id"=> good[:id], "data-goods-name"=> good[:name]
+= render 'stocks'

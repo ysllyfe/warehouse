@@ -1,0 +1,35 @@
+#modal-bottomfull.modal.fade.modal-bottomfull tabindex="-1" role="dialog" aria-hidden="true"
+  .modal-dialog
+    .modal-content
+      .modal-header
+        button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+          i class="icons-office-52"
+        h4 class="modal-title"
+          strong#ajax-name-target 修改库存信息
+      .modal-body
+        p 减少库存请填写负数
+        input type="text" name="amount" class="form-control"
+        input type="hidden" name="goods-id"
+      .modal-footer
+        button type="button" class="btn btn-default btn-embossed" data-dismiss="modal" Close
+        button type="button" id="ajax-submit" class="btn btn-primary btn-embossed" data-dismiss="modal" Save changes
+javascript:
+  $(document).ready(function(){
+    $(".ajax-modal").click(function(){
+      $('#ajax-name-target').text($(this).data('goods-name'));
+      $('input[name="goods-id"]').val($(this).data('goods-id'));
+    });
+    $('#ajax-submit').click(function(){
+      var goods = $('input[name="goods-id"]').val();
+      var amount = $('input[name="amount"]').val();
+      $.ajax({
+        url: "#{warehouse.warehouse_stocks_path(@warehouse.id)}",
+        type: 'post',
+        dataType: 'text',
+        data:{'goods_id':goods,'amount':amount},
+        success: function(response){
+          window.location.reload();
+        }
+      })
+    });
+  })
