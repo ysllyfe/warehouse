@@ -26,7 +26,7 @@ end
 In the model that you want to treat as a warehouse
 
 ```ruby
-Class YOUMODEL < ActiveRecord::Base
+Class YOUR_MODEL < ActiveRecord::Base
     ...
     include WarehouseAble
     acts_as_warehouse :goods_class_name=>Product, :name=>'name', :type=>'chinese name of the model'
@@ -37,7 +37,12 @@ The WarehouseAble will automatic create the warehouse record.
 Initialize the exist records.
 
 ```ruby
-YOUMODEL.warehouse_init
+YOUR_MODEL.warehouse_init
 ```
 
+Change routes.rb to mount the engine
+
+```ruby
+mount Warehouse::Engine => '/'
+```
 
