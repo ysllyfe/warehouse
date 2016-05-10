@@ -6,7 +6,7 @@ module Warehouse
     end
 
     def create
-      @warehouse.add_stocks(params[:goods_id],params[:amount])
+      @warehouse.add_stocks(params[:goods_id],params[:amount],params[:price])
       render :text=>'success'
     end
 

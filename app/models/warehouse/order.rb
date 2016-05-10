@@ -20,6 +20,8 @@ module Warehouse
   class Order < Base
     include AASM
 
+    before_save :record_status_change, if: -> {status_changed?}
+
     has_many :order_items, foreign_key: "warehouse_order_id"
     has_many :order_memos, foreign_key: "warehouse_order_id"
     before_save :price_amount
@@ -27,28 +29,51 @@ module Warehouse
     enum status: {
       created:     1,     #订单 创建
       canceled:    10,    #订单 取消
-      accepted:    50,    #订单 接受
       shipping:    100,   #订单 发货
-      warehousing: 200,   #订单 收货
-      complete:    300    #订单 完成
+      complete:    200    #订单 收货
     }
 
     aasm :column => :status, :enum => true do
+
       state :created, :initial => true
       state :canceled
-      state :accepted
       state :shipping
-      state :warehousing
       state :complete
 
-      event :accept do
-        transitions from: :created, to: :accepted
+      event :ship do
+        transitions from: [:created], to: :shipping
+      end
+
+      event :done do
+        transitions from: [:shipping], to: :complete
       end
 
       event :cancel do
-        transitions from: [:created, :accepted], to: :canceled
+        transitions from: [:created, :shipping], to: :canceled
       end
 
+    end
+
+    def record_status_change
+      raise 'Error, status change must through AASM.' unless aasm.current_event
+      case aasm.current_event.to_s
+      when /ship/
+        # 对应供应方的库存减少
+        add_stock(sale,'-')
+      when /done/
+        # 对应采购人的库存增加
+        add_stock(purchase,'+')
+      when /cancel/
+        # 是否shipping，是的话，要回退商品库存
+        status_was == 'shipping' && add_stock(sale,'+')
+      end
+    end
+
+    def add_stock(category,direction='+')
+      order_items.each do |t|
+        amount = direction == '+' ? t.quantity : -t.quantity
+        Stock.create(warehouse_id:category.id,goods_id:t.goods_id,amount:amount,warehouse_order_id:id)
+      end
     end
 
     def editable_by?(warehouse_id)

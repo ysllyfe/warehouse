@@ -10,6 +10,7 @@
         p 减少库存请填写负数
         input type="text" name="amount" class="form-control"
         input type="hidden" name="goods-id"
+        input type="hidden" name="goods-price"
       .modal-footer
         button type="button" class="btn btn-default btn-embossed" data-dismiss="modal" Close
         button type="button" id="ajax-submit" class="btn btn-primary btn-embossed" data-dismiss="modal" Save changes
@@ -18,15 +19,17 @@ javascript:
     $(".ajax-modal").click(function(){
       $('#ajax-name-target').text($(this).data('goods-name'));
       $('input[name="goods-id"]').val($(this).data('goods-id'));
+      $('input[name="goods-price"]').val($(this).data('goods-price'));
     });
     $('#ajax-submit').click(function(){
       var goods = $('input[name="goods-id"]').val();
       var amount = $('input[name="amount"]').val();
+      var price = $('input[name="goods-price"]').val();
       $.ajax({
         url: "#{warehouse.warehouse_stocks_path(@warehouse.id)}",
         type: 'post',
         dataType: 'text',
-        data:{'goods_id':goods,'amount':amount},
+        data:{'goods_id':goods,'amount':amount,'price':price},
         success: function(response){
           window.location.reload();
         }

@@ -1,7 +1,6 @@
 module WarehouseAble
   extend ActiveSupport::Concern
   included do
-    # has_one :warehouse, as: :warehouseable, class_name: 'Warehouse::Category'
     after_create :create_warehouse
   end
   module ClassMethods
@@ -17,10 +16,11 @@ module WarehouseAble
       conf = {
         :prefix => '',
         :goods_class_name => nil,
-        :name => 'name'
+        :name => 'name',        # name 表示 acts_as_warehouse 对象表示名称的字段
+        :goods_name => 'name'   # goods_name 表示 product 的 name 字段/方法
       }
       conf.update(options)
-      if conf[:goods_class_name].nil?
+      if conf[:goods_class_name].nil? || conf[:name].nil? || conf[:goods_name].nil?
         raise ActiveRecord::ActiveRecordError, "acts_as_warehouse must be provided with :goods_class_name option with class name like Product"
       end
       unless conf[:prefix] == ''
@@ -42,32 +42,17 @@ module WarehouseAble
     warehouse_category.save
   end
 
-  # 仓库商品库存计算
+  # 仓库商品库存计算，仓库库存计算放到model/category中
   def goods_stocks
-    exists_stocks = warehouse.stocks.inject({}) do |mem, item|
-      if mem[item.goods_id]
-        mem[item.goods_id] += item.amount
-      else
-        mem[item.goods_id] = item.amount
-      end
-      mem
-    end
-    if get_warehouse_opts[:goods_class_name].kind_of? Class
-      goods_list = get_warehouse_opts[:goods_class_name].all
-    elsif get_warehouse_opts[:goods_class_name].kind_of? String
-      goods_list = get_warehouse_opts[:goods_class_name].classify.constantize.all
-    else
-      raise 'Argument Error, :goods_class_name must be Class or String'
-    end
-    warehouse_stocks = []
-    goods_list.each do |good|
-      warehouse_stocks << goods_stock_item(good, exists_stocks)
-    end
-    warehouse_stocks
+    warehouse.goods_stocks
   end
 
+  # 手动改库存，一定会自动建一条订单，不允许直接对stocks表进行操作
+  def add_stocks(goods_id, amount, unit_price)
+    warehouse.add_stocks(goods_id, amount, unit_price)
+  end
 
-  #取acts_as_warehouse带过来的options
+  #取acts_as_warehouse带过来的options，有可能是多重继承，这里只取两重
   def get_warehouse_opts
     if self.class.warehouse_opts.blank? && self.class.superclass.try(:warehouse_opts).present?
       opts = self.class.superclass.warehouse_opts
@@ -79,21 +64,20 @@ module WarehouseAble
     opts || {}
   end
 
-  private
-  def goods_stock_item(good, exists_stocks)
-    {
-      id: good.id,
-      class: good.class.to_s,
-      name: good.name,
-      guidance_price: good.guidance_price,
-      cost_price: good.cost_price,
-      brand_id: good.brand_id,
-      product_category_id: good.product_category_id,
-      amount: exists_stocks[good.id] ? exists_stocks[good.id] : 0
-    }
+  #初始化superset_warehouse,方法只能在warehouse_able中，因为get_warehouse_opts
+  def create_superset_warehouse
+    ::Warehouse::Category.find_or_create_by(superset:true) do |t|
+      t.goods_class_name = get_warehouse_opts[:goods_class_name]
+      t.m_name = get_warehouse_opts[:name]
+      t.goods_name = get_warehouse_opts[:goods_name]
+      t.superset = true
+      t.name = 'superset'
+    end
   end
 
+  private
   def create_warehouse
+    create_superset_warehouse
     self.warehouse = ::Warehouse::Category.new
   end
 end

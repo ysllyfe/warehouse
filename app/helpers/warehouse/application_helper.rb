@@ -7,7 +7,6 @@ module Warehouse
         operation << "<li><a href='#{t[1]}'>#{t[0]}</a></li>"
       end
 
-
       html = <<-DOC.html_safe
       <div class="btn-group" role="group" aria-label="...">
         <button type="button" class="btn btn-default">1</button>

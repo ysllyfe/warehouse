@@ -23,5 +23,5 @@ h1 “#{@warehouse.full_name}” 库存情况
             td #{good[:product_category_id]}
             td #{good[:amount]}
             td
-              = link_to '增加', '#', :class=>'ajax-modal', 'data-toggle'=>"modal", 'data-target'=>"#modal-bottomfull", "data-goods-id"=> good[:id], "data-goods-name"=> good[:name]
+              = link_to '增加', '#', :class=>'ajax-modal', 'data-toggle'=>"modal", 'data-target'=>"#modal-bottomfull", "data-goods-price"=>good[:guidance_price], "data-goods-id"=> good[:id], "data-goods-name"=> good[:name]
 = render 'stocks'

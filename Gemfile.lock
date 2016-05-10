@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     warehouse (0.0.1)
+      aasm
       pg
       rails (~> 4.2.6)
       slim
@@ -9,6 +10,7 @@ PATH
 GEM
   remote: https://ruby.taobao.org/
   specs:
+    aasm (4.10.0)
     actionmailer (4.2.6)
       actionpack (= 4.2.6)
       actionview (= 4.2.6)
@@ -46,7 +48,7 @@ GEM
       tzinfo (~> 1.1)
     arel (6.0.3)
     builder (3.2.2)
-    concurrent-ruby (1.0.1)
+    concurrent-ruby (1.0.2)
     erubis (2.7.0)
     globalid (0.3.6)
       activesupport (>= 4.1.0)

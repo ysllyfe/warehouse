@@ -1,7 +1,7 @@
 module Warehouse
   class WarehousesController < WarehouseController
     def index
-      @warehouses = Category.all.order('id desc')
+      @warehouses = Category.common_category.order('id desc')
     end
 
     def merge

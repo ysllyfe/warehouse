@@ -45,7 +45,7 @@ module Warehouse
       end
 
       @goods = @order.order_items
-      @product = @warehouse.opts[:goods_class_name]
+      @product = @warehouse.opts[:goods_class_name].classify.constantize
       @memo = OrderMemo.new
       @memos = @order.order_memos.order('id desc')
     end

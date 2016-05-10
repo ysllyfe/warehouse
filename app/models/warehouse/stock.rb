@@ -11,5 +11,7 @@
 module Warehouse
   class Stock < Base
     belongs_to :category
+    belongs_to :order
+    # 对应库存的增减，不能直接记录数据，要从order触发
   end
 end
