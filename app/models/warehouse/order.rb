@@ -33,6 +33,26 @@ module Warehouse
       complete:    200    #订单 收货
     }
 
+    def transitions_to(state)
+      return false if state.blank?
+      states, event = before_status(state)
+      return true if states.include?(state) && self.send("may_#{event}?") && self.send("#{event}!")
+      return false
+    end
+
+    def before_status(state)
+      case state
+      when 'created'
+        [ [], nil]
+      when 'canceled'
+        [ ['created' , 'shipping'], 'cancel']
+      when 'shipping'
+        [ ['created'] , 'ship']
+      when 'complete'
+        [ ['shipping'] , 'done']
+      end
+    end
+
     aasm :column => :status, :enum => true do
 
       state :created, :initial => true
@@ -49,7 +69,7 @@ module Warehouse
       end
 
       event :cancel do
-        transitions from: [:created, :shipping], to: :canceled
+        transitions :from => [:created, :shipping], :to => :canceled
       end
 
     end
@@ -66,6 +86,7 @@ module Warehouse
       when /cancel/
         # 是否shipping，是的话，要回退商品库存
         status_was == 'shipping' && add_stock(sale,'+')
+        true
       end
     end
 

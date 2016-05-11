@@ -37,6 +37,16 @@ module Warehouse
       end
     end
 
+    def update
+      @order = Order.find(params[:id])
+      if @order.transitions_to(params[:status])
+        flash[:success] = '修改状态成功'
+      else
+        flash[:error] = '无法移动状态'
+      end
+      redirect_to warehouse.warehouse_order_path(@warehouse.id, @order.id)
+    end
+
     def show
       @order = Order.find(params[:id])
 
