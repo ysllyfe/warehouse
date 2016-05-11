@@ -60,5 +60,14 @@ class InitDb < ActiveRecord::Migration
       t.integer "warehouse_order_id"
       t.integer "amount",              default: 0
     end
+
+    create_table "warehouse_goods", force: :cascade do |t|
+      t.integer "warehouse_id", index: true
+      t.integer "goods_id",     default: 0
+      t.decimal "cost"  # 成本价
+      t.decimal "price" # 指导价
+      t.datetime "created_at"
+      t.datetime "updated_at"
+    end
   end
 end

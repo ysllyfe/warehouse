@@ -10,6 +10,14 @@ module WarehouseAble
       all.each do |t|
         t.warehouse || t.warehouse = ::Warehouse::Category.new
       end
+      # superset
+      ::Warehouse::Category.find_or_create_by(superset:true) do |t|
+        t.goods_class_name = @warehouse_opts[:goods_class_name]
+        t.m_name = @warehouse_opts[:name]
+        t.goods_name = @warehouse_opts[:goods_name]
+        t.superset = true
+        t.name = 'superset'
+      end
     end
     private
     def acts_as_warehouse(options={})
@@ -64,20 +72,8 @@ module WarehouseAble
     opts || {}
   end
 
-  #初始化superset_warehouse,方法只能在warehouse_able中，因为get_warehouse_opts
-  def create_superset_warehouse
-    ::Warehouse::Category.find_or_create_by(superset:true) do |t|
-      t.goods_class_name = get_warehouse_opts[:goods_class_name]
-      t.m_name = get_warehouse_opts[:name]
-      t.goods_name = get_warehouse_opts[:goods_name]
-      t.superset = true
-      t.name = 'superset'
-    end
-  end
-
   private
   def create_warehouse
-    create_superset_warehouse
     self.warehouse = ::Warehouse::Category.new
   end
 end

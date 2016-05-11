@@ -27,7 +27,7 @@ module Warehouse
     before_save :price_amount
 
     enum status: {
-      created:     1,     #订单 创建
+      created:     0,     #订单 创建
       canceled:    10,    #订单 取消
       shipping:    100,   #订单 发货
       complete:    200    #订单 收货
@@ -73,6 +73,8 @@ module Warehouse
       order_items.each do |t|
         amount = direction == '+' ? t.quantity : -t.quantity
         Stock.create(warehouse_id:category.id,goods_id:t.goods_id,amount:amount,warehouse_order_id:id)
+        # good list touch
+        Good.touch_goods(warehouse_id:category.id,goods_id:t.goods_id,cost:t.unit_price)
       end
     end
 

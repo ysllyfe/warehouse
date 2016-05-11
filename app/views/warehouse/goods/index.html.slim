@@ -1,0 +1,27 @@
+h1 #{@warehouse.name}
+.panel
+  .panel-content
+    = simple_form_for :goods, url: warehouse.warehouse_goods_path do |f|
+      table.table
+        thead
+          tr
+            td ID
+            td 商品ID
+            td 商品名称
+            td 商品源(成本价)
+            td 商品源(指导价)
+            td 仓库(成本价)
+            td 仓库(指导价)
+        tbody
+          - @goods.each do |t|
+            tr
+              td #{t.id}
+              td #{t.goods_id}
+              td #{t.name}
+              td #{t.cost_price}
+              td #{t.guidance_price}
+              td
+                input type="text" value="#{t.warehouse_cost}" name="costs[#{t.id}]"
+              td
+                input type="text" value="#{t.warehouse_price}" name="prices[#{t.id}]"
+      = f.submit '修改数据', class: 'btn btn-primary'

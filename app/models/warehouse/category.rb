@@ -15,7 +15,7 @@
 #
 
 module Warehouse
-  class Category < ActiveRecord::Base
+  class Category < Base
     # belongs_to :warehouseable, polymorphic: true
     has_many :stocks, foreign_key: "warehouse_id"
     has_many :orders, foreign_key: "warehouse_id"
@@ -133,7 +133,18 @@ module Warehouse
 
     # 仓库库存
     def goods_stocks
-      exists_stocks = stocks.inject({}) do |mem, item|
+      exist_prices = stocks_goods_with_price
+      goods_list = opts[:goods_class_name].classify.constantize.all
+      warehouse_stocks = []
+      goods_list.each do |good|
+        warehouse_stocks << goods_stock_item(good, exist_prices)
+      end
+      warehouse_stocks
+    end
+
+    #库存商品数量计算
+    def stocks_count
+      stocks.inject({}) do |mem, item|
         if mem[item.goods_id]
           mem[item.goods_id] += item.amount
         else
@@ -141,12 +152,23 @@ module Warehouse
         end
         mem
       end
-      goods_list = opts[:goods_class_name].classify.constantize.all
-      warehouse_stocks = []
-      goods_list.each do |good|
-        warehouse_stocks << goods_stock_item(good, exists_stocks)
+    end
+
+    #仓库库存价格
+    def goods
+      goods_class = opts[:goods_class_name].pluralize
+      Good.joins("LEFT JOIN  \"#{goods_class}\" ON #{goods_class}.id = warehouse_goods.goods_id")
+          .select("*,warehouse_goods.id as id,warehouse_goods.cost as warehouse_cost,warehouse_goods.price as warehouse_price,#{goods_class}.id as good_origin_id")
+          .where(warehouse_id:id)
+    end
+
+    #库存商品价格
+    def stocks_goods_with_price
+      goods.inject({}) do |mem, item|
+        mem.merge({
+          item.goods_id => item.as_json.merge({amount:stocks_count[item.goods_id]})
+        })
       end
-      warehouse_stocks
     end
 
     # 取opts
@@ -169,11 +191,11 @@ module Warehouse
         id: good.id,
         class: good.class.to_s,
         name: good.name,
-        guidance_price: good.guidance_price,
-        cost_price: good.cost_price,
+        guidance_price: exists_stocks[good.id] ? exists_stocks[good.id]['warehouse_price'] : good.guidance_price,
+        cost_price: exists_stocks[good.id] ? exists_stocks[good.id]['warehouse_cost'] : good.cost_price,
         brand_id: good.brand_id,
         product_category_id: good.product_category_id,
-        amount: exists_stocks[good.id] ? exists_stocks[good.id] : 0
+        amount: exists_stocks[good.id] ? exists_stocks[good.id][:amount] : 0,
       }
     end
   end

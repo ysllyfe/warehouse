@@ -3,6 +3,7 @@ h1 #{@warehouse.name}
   .panel-content
     = link_to '库存信息', warehouse.warehouse_stocks_path(@warehouse), class: 'btn btn-primary'
     = link_to '采购', warehouse.new_warehouse_order_path(@warehouse), class: 'btn btn-info'
+    = link_to '价格配置', warehouse.warehouse_goods_path(@warehouse), class: 'btn btn-success'
     hr
     h4 我的采购单
     table.table

@@ -2,7 +2,7 @@ module Warehouse
   class StocksController < WarehouseController
     before_action :get_warehouse
     def index
-      @goods_stocks = @warehouse.children.first.goods_stocks
+      @goods_stocks = @warehouse.goods_stocks
     end
 
     def create
