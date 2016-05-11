@@ -7,9 +7,6 @@ module WarehouseAble
     attr_reader :warehouse_opts
     # 初始化model warehouse数据
     def warehouse_init
-      all.each do |t|
-        t.warehouse || t.warehouse = ::Warehouse::Category.new
-      end
       # superset
       ::Warehouse::Category.find_or_create_by(superset:true) do |t|
         t.goods_class_name = @warehouse_opts[:goods_class_name]
@@ -17,6 +14,9 @@ module WarehouseAble
         t.goods_name = @warehouse_opts[:goods_name]
         t.superset = true
         t.name = 'superset'
+      end
+      all.each do |t|
+        t.warehouse || t.warehouse = ::Warehouse::Category.new
       end
     end
     private

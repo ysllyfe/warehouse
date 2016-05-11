@@ -1,26 +1,10 @@
 # Warehouse
 
-
-### How to Development
-
-`git clone https://github.com/ysllyfe/warehouse.git LOCAL_PATH`
-
-**add gem local to your Gemfile**
-
-```bash
-gem 'quiet_assets', group: :development
-gem 'require_reloader', group: :development
-gem 'warehouse', :path => LOCAL_PATH
-```
-To reload all local gems (the ones with :path attribute, or using local git repo):
-
-**config/environments/development.rb**
+### Usage
+**add gem to your Gemfile**
 
 ```ruby
-YourApp::Application.configure do
-  ...
-  RequireReloader.watch_local_gems!
-end
+gem 'warehouse', :github => 'ysllyfe/warehouse'
 ```
 
 In the model that you want to treat as a warehouse
@@ -30,7 +14,7 @@ Class YOUR_MODEL < ActiveRecord::Base
     ...
     include WarehouseAble
     acts_as_warehouse :goods_class_name=>Product, :name=>'name', :type=>'chinese name of the model', :goods_name=>'name'
-    
+
 end
 ```
 其中
@@ -54,4 +38,27 @@ mount Warehouse::Engine => '/'
 warehouse 构成一个闭环，所有向外部采购的商品，认为全部来自于superset，所有销售出去的商品，认为销售给superset。
 
 **重要：手动修改商品库存时，请使用add_stocks方法，系统自动生成订单，并修改订单状态至完成。对应会有superset的库存和对应category的库存变化**
+
+### How to Develop
+
+`git clone https://github.com/ysllyfe/warehouse.git LOCAL_PATH`
+
+**add gem local to your Gemfile**
+
+```bash
+gem 'quiet_assets', group: :development
+gem 'require_reloader', group: :development
+gem 'warehouse', :path => LOCAL_PATH
+```
+To reload all local gems (the ones with :path attribute, or using local git repo):
+
+**config/environments/development.rb**
+
+```ruby
+YourApp::Application.configure do
+  ...
+  RequireReloader.watch_local_gems!
+end
+```
+
 
