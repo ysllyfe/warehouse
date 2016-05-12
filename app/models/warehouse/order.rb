@@ -36,7 +36,7 @@ module Warehouse
     def transitions_to(state)
       return false if state.blank?
       states, event = before_status(state)
-      return true if states.include?(state) && self.send("may_#{event}?") && self.send("#{event}!")
+      return true if states.include?(status) && self.send("may_#{event}?") && self.send("#{event}!")
       return false
     end
 
